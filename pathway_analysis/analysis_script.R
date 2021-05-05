@@ -153,13 +153,17 @@ con <- makeContrasts(
 res <- glmQLFTest(fit, contrast=con)
 topTags(res)
 
+is.de <- decideTestsDGE(res)
+summary(is.de)
+
 ### Pathway analysis
 ### Gene ontology analysis
-go <- goana(tr, species="Mm")
+go <- goana(res, species="Mm")
+#go <- goana(res, species="Mm", FDR=0.5)
 topGO(go, n=15)
 
 ### KEGG pathway analysis
-keg <- kegga(tr, species="Mm")
+keg <- kegga(res, species="Mm")
 topKEGG(keg, n=15, truncate=34)
 
 ### CURRENT WORKING POINT
