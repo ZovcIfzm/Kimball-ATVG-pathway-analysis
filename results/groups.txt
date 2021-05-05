@@ -1,0 +1,9 @@
+CellType	Status	Replicate
+DIO	High	1
+DIO	Low	1
+DIO	High	2
+DIO	Low	2
+ND	High	1
+ND	Low	1
+ND	High	2
+ND	Low	2

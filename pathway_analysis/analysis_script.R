@@ -15,29 +15,34 @@ BiocManager::install("RnaSeqGeneEdgeRQL")
 BiocManager::install("org.Mm.eg.db")
 
 ### Setting up the groups variable
-library(RnaSeqGeneEdgeRQL)
+# library(RnaSeqGeneEdgeRQL)
 
-targetsFile <- system.file("extdata", "targets.txt", package="RnaSeqGeneEdgeRQL")
-targets <- read.delim(targetsFile, stringsAsFactors=FALSE)
+#targetsFile <- system.file("extdata", "targets.txt", package="RnaSeqGeneEdgeRQL")
+#targets <- read.delim(targetsFile, stringsAsFactors=FALSE)
+targets <- read.delim("../results/groups.txt", stringsAsFactors=FALSE)
 targets
 
 group <- paste(targets$CellType, targets$Status, sep=".")
+group <- group[c(1,3,2,4,5,7,6,8)]
 group <- factor(group)
 table(group)
+group
 
 ### Preliminary analysis
+'''
 FileURL <- paste(
   "http://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE60450",
   "format=file",
   "file=GSE60450_Lactation-GenewiseCounts.txt.gz",
   sep="&")
 download.file(FileURL, "GSE60450_Lactation-GenewiseCounts.txt.gz")
-
-GenewiseCounts <- read.delim("GSE60450_Lactation-GenewiseCounts.txt.gz",
-                             row.names="EntrezGeneID")
-colnames(GenewiseCounts) <- substring(colnames(GenewiseCounts),1,7)
+'''
+#GenewiseCounts <- read.delim("GSE60450_Lactation-GenewiseCounts.txt.gz",
+#                             row.names="EntrezGeneID")
+GenewiseCounts <- read.delim("../results/read_counts.txt", row.names="Geneid")[,-1:-4]
+GenewiseCounts <- GenewiseCounts[,c(1,2,4,3,5,6,8,7,9)]
+#colnames(GenewiseCounts) <- colnames(GenewiseCounts)
 dim(GenewiseCounts)
-
 head(GenewiseCounts)
 
 library(edgeR)
@@ -66,15 +71,15 @@ y <- calcNormFactors(y)
 y$samples
 
 ### Exploring differences between libraries
-pch <- c(0,1,2,15,16,17)
-colors <- rep(c("darkgreen", "red", "blue"), 2)
+pch <- c(0,1,15,16)
+colors <- rep(c("darkgreen","blue"), 2)
 plotMDS(y, col=colors[group], pch=pch[group])
 legend("topleft", legend=levels(group), pch=pch, col=colors, ncol=2)
 
-plotMD(y, column=1)
+plotMD(y, column=2)
 abline(h=0, col="red", lty=2, lwd=2)
 
-plotMD(y, column=11)
+plotMD(y, column=8)
 abline(h=0, col="red", lty=2, lwd=2)
 
 ### Design Matrix
@@ -92,6 +97,8 @@ head(fit$coefficients)
 plotQLDisp(fit)
 
 summary(fit$df.prior)
+
+### CURRENT WORKING POINT
 
 ### Differential expression analysis
 ### Testing for differential expression
