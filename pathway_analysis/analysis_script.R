@@ -79,7 +79,7 @@ legend("topleft", legend=levels(group), pch=pch, col=colors, ncol=2)
 plotMD(y, column=2)
 abline(h=0, col="red", lty=2, lwd=2)
 
-plotMD(y, column=8)
+plotMD(y, column=6)
 abline(h=0, col="red", lty=2, lwd=2)
 
 ### Design Matrix
@@ -102,7 +102,7 @@ summary(fit$df.prior)
 
 ### Differential expression analysis
 ### Testing for differential expression
-B.LvsP <- makeContrasts(B.lactating-B.pregnant, levels=design)
+B.LvsP <- makeContrasts(DIO.Low-ND.Low, levels=design)
 res <- glmQLFTest(fit, contrast=B.LvsP)
 topTags(res)
 
