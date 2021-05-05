@@ -98,12 +98,10 @@ plotQLDisp(fit)
 
 summary(fit$df.prior)
 
-### CURRENT WORKING POINT
-
 ### Differential expression analysis
 ### Testing for differential expression
-B.LvsP <- makeContrasts(DIO.Low-ND.Low, levels=design)
-res <- glmQLFTest(fit, contrast=B.LvsP)
+High.DIOvsND <- makeContrasts(DIO.High-ND.High, levels=design)
+res <- glmQLFTest(fit, contrast=High.DIOvsND)
 topTags(res)
 
 is.de <- decideTestsDGE(res)
@@ -113,7 +111,7 @@ plotMD(res, status=is.de, values=c(1,-1), col=c("red","blue"),
        legend="topright")
 
 ### Differential expression above a fold-change threshold
-tr <- glmTreat(fit, contrast=B.LvsP, lfc=log2(1.5))
+tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(1.5))
 topTags(tr)
 
 is.de <- decideTestsDGE(tr)
@@ -137,6 +135,7 @@ heatmap.2(logCPM, col=col.pan, Rowv=TRUE, scale="none",
           trace="none", dendrogram="both", cexRow=1, cexCol=1.4, density.info="none",
           margin=c(10,9), lhei=c(2,10), lwid=c(2,6))
 
+'''
 ### Analysis of deviance
 con <- makeContrasts(
   L.PvsL = L.pregnant - L.lactating,
@@ -145,10 +144,11 @@ con <- makeContrasts(
 
 res <- glmQLFTest(fit, contrast=con)
 topTags(res)
+'''
 
 ### Complicated contrasts
 con <- makeContrasts(
-  (L.lactating-L.pregnant)-(B.lactating-B.pregnant), 
+  (DIO.High-DIO.Low)-(ND.High-ND.Low), 
   levels=design)
 res <- glmQLFTest(fit, contrast=con)
 topTags(res)
@@ -162,6 +162,7 @@ topGO(go, n=15)
 keg <- kegga(tr, species="Mm")
 topKEGG(keg, n=15, truncate=34)
 
+### CURRENT WORKING POINT
 ### FRY gene set tests
 library(GO.db)
 cyt.go <- c("GO:0032465", "GO:0000281", "GO:0000920")
@@ -181,12 +182,12 @@ barcodeplot(res$table$logFC, index=index, labels=c("B.virgin","B.lactating"),
 ### Camera gene set enrichment analysis
 load(url("http://bioinf.wehi.edu.au/software/MSigDB/mouse_c2_v5p1.rdata"))
 idx <- ids2indices(Mm.c2,id=rownames(y))
-BvsL.v <- makeContrasts(B.virgin - L.virgin, levels=design)
-cam <- camera(y, idx, design, contrast=BvsL.v, inter.gene.cor=0.01)
+High.DIOvsNDCam <- makeContrasts(DIO.High - ND.High, levels=design)
+cam <- camera(y, idx, design, contrast=High.DIOvsNDCam, inter.gene.cor=0.01)
 options(digits=2)
 head(cam,14)
 
-res <- glmQLFTest(fit, contrast=BvsL.v)
+res <- glmQLFTest(fit, contrast=High.DIOvsNDCam)
 barcodeplot(res$table$logFC,
             index=idx[["LIM_MAMMARY_STEM_CELL_UP"]],
             index2=idx[["LIM_MAMMARY_STEM_CELL_DN"]],
