@@ -1,0 +1,15 @@
+Status	../reads/DIO1HighReads.bam	../reads/DIO1LowReads.bam	../reads/DIO2HighReads.bam	../reads/DIO2LowReads.bam	../reads/ND1HighReads.bam	../reads/ND1LowReads.bam	../reads/ND2HighReads.bam	../reads/ND2LowReads.bam
+Assigned	34009632	35053606	25322986	46371449	25989328	22449212	26201018	36068261
+Unassigned_Unmapped	16507545	17064625	11881334	22273558	13483925	11694230	12167235	14730158
+Unassigned_Read_Type	0	0	0	0	0	0	0	0
+Unassigned_Singleton	0	0	0	0	0	0	0	0
+Unassigned_MappingQuality	0	0	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0	0	0
+Unassigned_FragmentLength	0	0	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0	0	0
+Unassigned_MultiMapping	15091066	11552768	11415818	18660071	11528402	11091383	13515905	9667437
+Unassigned_Secondary	0	0	0	0	0	0	0	0
+Unassigned_NonSplit	0	0	0	0	0	0	0	0
+Unassigned_NoFeatures	23068550	23123763	16255717	25198260	24507856	16369427	17459933	26399962
+Unassigned_Overlapping_Length	0	0	0	0	0	0	0	0
+Unassigned_Ambiguity	748433	775588	552107	1077638	531664	492780	550011	785276
