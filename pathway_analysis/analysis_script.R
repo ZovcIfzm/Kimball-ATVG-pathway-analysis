@@ -111,7 +111,7 @@ plotMD(res, status=is.de, values=c(1,-1), col=c("red","blue"),
        legend="topright")
 
 ### Differential expression above a fold-change threshold
-tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(1.5))
+tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(1.0))
 topTags(tr)
 
 is.de <- decideTestsDGE(tr)
