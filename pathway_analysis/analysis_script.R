@@ -15,10 +15,6 @@ BiocManager::install("RnaSeqGeneEdgeRQL")
 BiocManager::install("org.Mm.eg.db")
 
 ### Setting up the groups variable
-# library(RnaSeqGeneEdgeRQL)
-
-#targetsFile <- system.file("extdata", "targets.txt", package="RnaSeqGeneEdgeRQL")
-#targets <- read.delim(targetsFile, stringsAsFactors=FALSE)
 targets <- read.delim("../results/groups.txt", stringsAsFactors=FALSE)
 targets
 
@@ -29,19 +25,8 @@ table(group)
 group
 
 ### Preliminary analysis
-'''
-FileURL <- paste(
-  "http://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE60450",
-  "format=file",
-  "file=GSE60450_Lactation-GenewiseCounts.txt.gz",
-  sep="&")
-download.file(FileURL, "GSE60450_Lactation-GenewiseCounts.txt.gz")
-'''
-#GenewiseCounts <- read.delim("GSE60450_Lactation-GenewiseCounts.txt.gz",
-#                             row.names="EntrezGeneID")
 GenewiseCounts <- read.delim("../results/read_counts.txt", row.names="Geneid")[,-1:-4]
 GenewiseCounts <- GenewiseCounts[,c(1,2,4,3,5,6,8,7,9)]
-#colnames(GenewiseCounts) <- colnames(GenewiseCounts)
 dim(GenewiseCounts)
 head(GenewiseCounts)
 
@@ -100,8 +85,11 @@ summary(fit$df.prior)
 
 ### Differential expression analysis
 ### Testing for differential expression
-High.DIOvsND <- makeContrasts(DIO.High-ND.High, levels=design)
-res <- glmQLFTest(fit, contrast=High.DIOvsND)
+con <- makeContrasts(
+  (DIO.High-DIO.Low)-(ND.High-ND.Low), 
+  levels=design)
+res <- glmQLFTest(fit, contrast=con)
+#tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(1.0))
 topTags(res)
 
 is.de <- decideTestsDGE(res)
@@ -110,22 +98,12 @@ summary(is.de)
 plotMD(res, status=is.de, values=c(1,-1), col=c("red","blue"),
        legend="topright")
 
-### Differential expression above a fold-change threshold
-tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(1.0))
-topTags(tr)
-
-is.de <- decideTestsDGE(tr)
-summary(is.de)
-
-plotMD(tr, status=is.de, values=c(1,-1), col=c("red","blue"),
-       legend="topright")
-
 ### Heatmap clustering
 logCPM <- cpm(y, prior.count=2, log=TRUE)
 rownames(logCPM) <- y$genes$Symbol
 colnames(logCPM) <- paste(y$samples$group, 1:2, sep="-")
 
-o <- order(tr$table$PValue)
+o <- order(res$table$PValue)
 logCPM <- logCPM[o[1:30],]
 logCPM <- t(scale(t(logCPM)))
 
@@ -135,26 +113,6 @@ heatmap.2(logCPM, col=col.pan, Rowv=TRUE, scale="none",
           trace="none", dendrogram="both", cexRow=1, cexCol=1.4, density.info="none",
           margin=c(10,9), lhei=c(2,10), lwid=c(2,6))
 
-'''
-### Analysis of deviance
-con <- makeContrasts(
-  L.PvsL = L.pregnant - L.lactating,
-  L.VvsL = L.virgin - L.lactating,
-  L.VvsP = L.virgin - L.pregnant, levels=design)
-
-res <- glmQLFTest(fit, contrast=con)
-topTags(res)
-'''
-
-### Complicated contrasts
-con <- makeContrasts(
-  (DIO.High-DIO.Low)-(ND.High-ND.Low), 
-  levels=design)
-res <- glmQLFTest(fit, contrast=con)
-topTags(res)
-
-is.de <- decideTestsDGE(res)
-summary(is.de)
 
 ### Pathway analysis
 ### Gene ontology analysis
@@ -167,6 +125,7 @@ keg <- kegga(res, species="Mm")
 topKEGG(keg, n=15, truncate=34)
 
 ### CURRENT WORKING POINT
+'''
 ### FRY gene set tests
 library(GO.db)
 cyt.go <- c("GO:0032465", "GO:0000281")
@@ -199,5 +158,4 @@ barcodeplot(res$table$logFC,
             main="LIM_MAMMARY_STEM_CELL",
             alpha=1)
 
-
-
+'''

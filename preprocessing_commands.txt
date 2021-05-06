@@ -1,0 +1,73 @@
+
+Trimmomatic trimming command example:
+java -jar trimmomatic-0.39.jar SE -phred33 ../data/merged_67243.fastq.gz ../data/NDRep1Ly6CLow.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+java -jar trimmomatic-0.39.jar SE -phred33 ../data/merged_67244.fastq.gz ../data/NDRep1Ly6CHigh.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+java -jar trimmomatic-0.39.jar SE -phred33 ../data/merged_67245.fastq.gz ../data/NDRep2Ly6CLow.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+java -jar trimmomatic-0.39.jar SE -phred33 ../data/merged_67246.fastq.gz ../data/NDRep2Ly6CHigh.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+java -jar trimmomatic-0.39.jar SE -phred33 ../data/merged_67247.fastq.gz ../data/DIORep1Ly6CLow.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+java -jar trimmomatic-0.39.jar SE -phred33 ../data/merged_67248.fastq.gz ../data/DIORep1Ly6CHigh.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+java -jar trimmomatic-0.39.jar SE -phred33 ../data/merged_67249.fastq.gz ../data/DIORep2Ly6CLow.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+java -jar trimmomatic-0.39.jar SE -phred33 ../data/merged_67250.fastq.gz ../data/DIORep2Ly6CHigh.fq.gz ILLUMINACLIP:TruSeq3-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+
+Hisat alignment command example:
+./hisat2-2.0.4/hisat2 -x mm10/genome -U data/NDRep1Ly6CHigh.fq.gz -S reads/ND1HighReads.sam
+./hisat2-2.0.4/hisat2 -x mm10/genome -U data/NDRep1Ly6CLow.fq.gz -S reads/ND1LowReads.sam
+./hisat2-2.0.4/hisat2 -x mm10/genome -U data/NDRep2Ly6CHigh.fq.gz -S reads/ND2HighReads.sam
+./hisat2-2.0.4/hisat2 -x mm10/genome -U data/NDRep2Ly6Clow.fq.gz -S reads/ND2LowReads.sam
+./hisat2-2.0.4/hisat2 -x mm10/genome -U data/DIORep1Ly6CLow.fq.gz -S reads/DIO1LowReadsAlt.sam
+./hisat2-2.0.4/hisat2 -x mm10/genome -U data/DIORep2Ly6CHigh.fq.gz -S reads/DIO2HighReadsAlt.sam
+./hisat2-2.0.4/hisat2 -x mm10/genome -U data/DIORep2Ly6Clow.fq.gz -S reads/DIO2LowReadsAlt.sam
+./hisat2-2.0.4/hisat2 -x mm10/genome -U data/DIORep1Ly6CHigh.fq.gz -S reads/DIO1HighReads.sam
+
+Convert sam files to bam (human-readable to binary, for compression)
+samtools view -bS reads/ND1HighReads.sam > reads/ND1HighReads.bam -
+samtools view -bS reads/ND1LowReads.sam > reads/ND1LowReads.bam -
+samtools view -bS reads/ND2HighReads.sam > reads/ND2HighReads.bam -
+samtools view -bS reads/ND2LowReads.sam > reads/ND2LowReads.bam -
+samtools view -bS reads/DIO1LowReadsAlt.sam > reads/DIO1LowReads.bam -
+samtools view -bS reads/DIO1HighReads.sam > reads/DIO1HighReads.bam -
+samtools view -bS reads/DIO2LowReadsAlt.sam > reads/DIO2LowReads.bam
+samtools view -bS reads/DIO2HighReadsAlt.sam > reads/DIO2HighReads.bam -
+
+Count reads with featureCount
+featureCounts -a annotation/mm10_RefSeq_exon.txt -o count_output.txt ../reads/*.bam -F SAF
+
+R Studio: DESeq2
+https://bioinformatics-core-shared-training.github.io/crukci-cluster-transition/session5-advanced.html
+https://lashlock.github.io/compbio/R_presentation.html
+	Using DESeq2
+
+libary("DESeq2)
+# countMatrix <- read.table("~/GitHub/Kimball-ATVG-pathway-analysis/subread-2.0.2-source/count_output.txt")
+countdata <- read.delim("~/GitHub/Kimball-ATVG-pathway-analysis/subread-2.0.2-source/count_output.txt", skip=1)
+rownames(countdata) <- countdata$Geneid
+countdata <- countdata[,-(1:6)]
+# df = data.frame(colnames(countdata))
+
+# samplesheet$CountTableNames <- gsub("-", ".", samplesheet$BamFile)
+# colnames(countdata) <- samplesheet$SampleName[match(colnames(countdata), samplesheet$CountTableNames)]
+
+# samplesheet = read.delim("~/GitHub/Kimball-ATVG-pathway-analysis/colNames.txt")
+
+metaData <- read.table("~/GitHub/Kimball-ATVG-pathway-analysis/colNames.txt", header=TRUE)
+dds = DESeqDataSetFromMatrix(countData=countdata,colData=metaData, design=~cond)
+dds2 <- DESeq(dds)
+res <- results(dds2)
+head(res)
+summary(res)
+res <- res[order(res$padj),]
+head(res)
+par(mfrow=c(2,3))
+plotCounts(dds2, gene="268449", intgroup="cond")
+'''
+fastqDir= file.path("~/GitHub/Kimball-ATVG-pathway-analysis/data")
+fastq <- list.files(fastqDir, pattern = "*.fq.gz")
+sampleNO <- str_sub(fastq, 1,10)
+condition = c(rep("P",2), rep("A30",2), rep("B96",2))
+libraryName = paste(condition,"-",sampleNO, sep = "")
+metadata <- data.frame(sampleNO = sampleNO,
+                       condition = condition,
+                       fastq = fastq,
+                       libraryName = libraryName)
+metadata
+'''
