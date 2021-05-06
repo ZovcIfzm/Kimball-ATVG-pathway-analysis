@@ -117,11 +117,11 @@ heatmap.2(logCPM, col=col.pan, Rowv=TRUE, scale="none",
 ### Pathway analysis
 ### Gene ontology analysis
 go <- goana(res, species="Mm")
-#go <- goana(res, species="Mm", FDR=0.5)
+go <- goana(res, species="Mm", FDR=0.3)
 topGO(go, n=15)
 
 ### KEGG pathway analysis
-keg <- kegga(res, species="Mm")
+keg <- kegga(res, species="Mm", FDR=0.3)
 topKEGG(keg, n=15, truncate=34)
 
 ### CURRENT WORKING POINT
