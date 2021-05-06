@@ -169,19 +169,19 @@ topKEGG(keg, n=15, truncate=34)
 ### CURRENT WORKING POINT
 ### FRY gene set tests
 library(GO.db)
-cyt.go <- c("GO:0032465", "GO:0000281", "GO:0000920")
+cyt.go <- c("GO:0032465", "GO:0000281")
 term <- select(GO.db, keys=cyt.go, columns="TERM")
 term
 
 Rkeys(org.Mm.egGO2ALLEGS) <- cyt.go
 cyt.go.genes <- as.list(org.Mm.egGO2ALLEGS)
 
-B.VvsL <- makeContrasts(B.virgin-B.lactating, levels=design)
+B.VvsL <- makeContrasts(DIO.High-DIO.Low, levels=design)
 fry(y, index=cyt.go.genes, design=design, contrast=B.VvsL)
 
 res <- glmQLFTest(fit, contrast=B.VvsL)
 index <- rownames(fit) %in% cyt.go.genes[[1]]
-barcodeplot(res$table$logFC, index=index, labels=c("B.virgin","B.lactating"), 
+barcodeplot(res$table$logFC, index=index, labels=c("DIO.High","DIO.Low"), 
             main=cyt.go[1])
 ### Camera gene set enrichment analysis
 load(url("http://bioinf.wehi.edu.au/software/MSigDB/mouse_c2_v5p1.rdata"))
@@ -198,5 +198,6 @@ barcodeplot(res$table$logFC,
             labels=c("B.virgin","L.virgin"),
             main="LIM_MAMMARY_STEM_CELL",
             alpha=1)
+
 
 
