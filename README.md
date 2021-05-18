@@ -6,4 +6,5 @@ Pathway analysis of differential gene expression for DIO vs ND mice
   <img src="https://github.com/ZovcIfzm/Kimball-ATVG-pathway-enrichment-analysis/blob/main/readme/0002.jpg">  
   <img src="https://github.com/ZovcIfzm/Kimball-ATVG-pathway-enrichment-analysis/blob/main/readme/0003.jpg">  
   <img src="https://github.com/ZovcIfzm/Kimball-ATVG-pathway-enrichment-analysis/blob/main/readme/0004.jpg">   
+  <img src="https://github.com/ZovcIfzm/Kimball-ATVG-pathway-enrichment-analysis/blob/main/readme/0005.jpg">  
 </p>
