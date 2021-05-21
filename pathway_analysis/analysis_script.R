@@ -89,7 +89,8 @@ con <- makeContrasts(
   (DIO.High-DIO.Low)-(ND.High-ND.Low), 
   levels=design)
 res <- glmQLFTest(fit, contrast=con)
-#tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(1.0))
+tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(1.0))
+tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(-1.0))
 topTags(res)
 
 is.de <- decideTestsDGE(res)
