@@ -88,7 +88,8 @@ summary(fit$df.prior)
 con <- makeContrasts(
   (DIO.High-DIO.Low)-(ND.High-ND.Low), 
   levels=design)
-res <- glmQLFTest(fit, contrast=con)
+"glmQLFit"(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05), ...)
+res <- glmQLFTest(glmfit, cooef=ncol(glmfit$design) contrast=con, poisson.bound=TRUE)
 tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(1.0))
 tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(-1.0))
 topTags(res)
