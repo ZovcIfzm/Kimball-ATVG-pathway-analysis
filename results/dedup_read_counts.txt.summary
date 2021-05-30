@@ -1,0 +1,15 @@
+Status	../../reads/sorted/DIO1HRSDD.bam	../../reads/sorted/DIO1LRSDD.bam	../../reads/sorted/DIO2HRSDD.bam	../../reads/sorted/DIO2LRSDD.bam	../../reads/sorted/ND1HRSDD.bam	../../reads/sorted/ND1LRSDD.bam	../../reads/sorted/ND2HRSDD.bam	../../reads/sorted/ND2LRSDD.bam
+Assigned	2535526	5179227	2097292	4965868	2793240	2287189	2888088	5170487
+Unassigned_Unmapped	16507545	17064625	11881334	22273558	13483925	11694230	12167235	14730158
+Unassigned_Read_Type	0	0	0	0	0	0	0	0
+Unassigned_Singleton	0	0	0	0	0	0	0	0
+Unassigned_MappingQuality	0	0	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0	0	0
+Unassigned_FragmentLength	0	0	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0	0	0
+Unassigned_MultiMapping	9382432	7523108	7135227	11431178	7426422	7357695	8737011	6401495
+Unassigned_Secondary	0	0	0	0	0	0	0	0
+Unassigned_NonSplit	0	0	0	0	0	0	0	0
+Unassigned_NoFeatures	1697403	4082475	1416247	2812976	3541029	1615771	2362806	5500584
+Unassigned_Overlapping_Length	0	0	0	0	0	0	0	0
+Unassigned_Ambiguity	53929	103809	44999	102681	56884	49076	59611	101502
