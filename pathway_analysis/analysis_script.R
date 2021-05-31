@@ -88,16 +88,14 @@ summary(fit$df.prior)
 con <- makeContrasts(
   (DIO.High-DIO.Low)-(ND.High-ND.Low), 
   levels=design)
-"glmQLFit"(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, winsor.tail.p=c(0.05),)
-res <- glmQLFTest(glmfit, cooef=ncol(glmfit$design), contrast=con, poisson.bound=TRUE) 
-tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(1.0))
-tr <- glmTreat(fit, contrast=High.DIOvsND, lfc=log2(-1.0))
-topTags(res)
+# res <- glmQLFTest(fit, contrast=con) 
+tr <- glmTreat(fit, contrast=con, lfc=log2(1.0))
+# topTags(res)
 topTags(tr)
-is.de <- decideTestsDGE(res)
+is.de <- decideTestsDGE(tr)
 summary(is.de)
 
-plotMD(res, status=is.de, values=c(1,-1), col=c("red","blue"),
+plotMD(tr, status=is.de, values=c(1,-1), col=c("red","blue"),
        legend="topright")
 
 ### Heatmap clustering
@@ -105,7 +103,7 @@ logCPM <- cpm(y, prior.count=2, log=TRUE)
 rownames(logCPM) <- y$genes$Symbol
 colnames(logCPM) <- paste(y$samples$group, 1:2, sep="-")
 
-o <- order(res$table$PValue)
+o <- order(tr$table$PValue)
 logCPM <- logCPM[o[1:30],]
 logCPM <- t(scale(t(logCPM)))
 
@@ -118,12 +116,11 @@ heatmap.2(logCPM, col=col.pan, Rowv=TRUE, scale="none",
 
 ### Pathway analysis
 ### Gene ontology analysis
-go <- goana(res, species="Mm")
-go <- goana(res, species="Mm")
-topGO(go, n=15)
+go <- goana(tr, species="Mm")
+topGO(go, n=15, FDR=1)
 
 ### KEGG pathway analysis
-keg <- kegga(res, species="Mm")
+keg <- kegga(tr, species="Mm")
 topKEGG(keg, n=15, truncate=34)
 
 ### CURRENT WORKING POINT
