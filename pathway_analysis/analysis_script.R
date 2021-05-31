@@ -15,7 +15,7 @@ BiocManager::install("RnaSeqGeneEdgeRQL")
 BiocManager::install("org.Mm.eg.db")
 
 ### Setting up the groups variable
-targets <- read.delim("../results/groups.txt", stringsAsFactors=FALSE)
+targets <- read.delim("../results/dedup_read_counts.txt", stringsAsFactors=FALSE)
 targets
 
 group <- paste(targets$CellType, targets$Status, sep=".")
@@ -88,39 +88,67 @@ summary(fit$df.prior)
 con <- makeContrasts(
   (DIO.High-DIO.Low)-(ND.High-ND.Low), 
   levels=design)
-# res <- glmQLFTest(fit, contrast=con) 
-tr <- glmTreat(fit, contrast=con, lfc=log2(1.0))
-# topTags(res)
-topTags(tr)
-is.de <- decideTestsDGE(tr)
-summary(is.de)
+tr <- glmQLFTest(fit, contrast=con)
+#tr <- glmTreat(fit, contrast=con, lfc=log2(1.0))
+tr_p <- tr[tr$table$PValue < 0.05,]
+tr_p <- tr_p[abs(tr_p$table$logFC) > 1,]
 
-plotMD(tr, status=is.de, values=c(1,-1), col=c("red","blue"),
+tr_pos <- tr_p[tr_p$table$logFC > 0,]
+# pos_tr <- tr
+# pos_tr$table <- tr[tr$table$logFC > 0,]
+# tr <- glmTreat(fit, contrast=con, lfc=log2(1.0))
+pos_tr <- tr[tr$table$logFC > 0,]
+pos_tr <- pos_tr[pos_tr$table$PValue < 0.05,]
+neg_tr <- tr[tr$table$logFC < 0,]
+neg_tr <- neg_tr[neg_tr$table$PValue < 0.05,]
+
+topTags(pos_tr)
+topTags(neg_tr)
+pos_de <- decideTestsDGE(pos_tr)
+neg_de <- decideTestsDGE(neg_tr)
+summary(pos_de)
+summary(neg_de)
+
+plotMD(pos_tr, status=pos_de, values=c(1,-1), col=c("red","blue"),
+       legend="topright")
+plotMD(neg_tr, status=neg_de, values=c(1,-1), col=c("red","blue"),
        legend="topright")
 
 ### Heatmap clustering
-logCPM <- cpm(y, prior.count=2, log=TRUE)
-rownames(logCPM) <- y$genes$Symbol
-colnames(logCPM) <- paste(y$samples$group, 1:2, sep="-")
+logCPM_pos <- cpm(y, prior.count=2, log=TRUE)
+rownames(logCPM_pos) <- y$genes$Symbol
+colnames(logCPM_pos) <- paste(y$samples$group, 1:2, sep="-")
 
-o <- order(tr$table$PValue)
-logCPM <- logCPM[o[1:30],]
-logCPM <- t(scale(t(logCPM)))
+o <- order(pos_tr$table$PValue)
+logCPM_pos <- logCPM_pos[o[1:30],]
+logCPM_pos <- t(scale(t(logCPM_pos)))
+
+logCPM_neg <- cpm(y, prior.count=2, log=TRUE)
+rownames(logCPM_neg) <- y$genes$Symbol
+colnames(logCPM_neg) <- paste(y$samples$group, 1:2, sep="-")
+
+o <- order(pos_tr$table$PValue)
+logCPM_neg <- logCPM_neg[o[1:30],]
+logCPM_neg <- t(scale(t(logCPM_neg)))
 
 library(gplots)
 col.pan <- colorpanel(100, "blue", "white", "red")
-heatmap.2(logCPM, col=col.pan, Rowv=TRUE, scale="none", 
+heatmap.2(logCPM_pos, col=col.pan, Rowv=TRUE, scale="none", 
+          trace="none", dendrogram="both", cexRow=1, cexCol=1.4, density.info="none",
+          margin=c(10,9), lhei=c(2,10), lwid=c(2,6))
+col.pan <- colorpanel(100, "blue", "white", "red")
+heatmap.2(logCPM_neg, col=col.pan, Rowv=TRUE, scale="none", 
           trace="none", dendrogram="both", cexRow=1, cexCol=1.4, density.info="none",
           margin=c(10,9), lhei=c(2,10), lwid=c(2,6))
 
 
 ### Pathway analysis
 ### Gene ontology analysis
-go <- goana(tr, species="Mm")
-topGO(go, n=15, FDR=1)
+go <- goana(tr_p, species="Mm", FDR=1)
+topGO(go, n=15)
 
 ### KEGG pathway analysis
-keg <- kegga(tr, species="Mm")
+keg <- kegga(tr_p, species="Mm", FDR=1)
 topKEGG(keg, n=15, truncate=34)
 
 ### CURRENT WORKING POINT
